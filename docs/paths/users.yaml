@@ -1,0 +1,310 @@
+users:
+  get:
+    summary: Get all users
+    operationId: getUsers
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+
+    parameters:
+      - $ref: '../components/parameters.yaml#/pageParam'
+      - $ref: '../components/parameters.yaml#/limitParam'
+      - $ref: '../components/parameters.yaml#/searchParam'
+      - $ref: '../components/parameters.yaml#/filterParam'
+      - $ref: '../components/parameters.yaml#/sortByParam'
+      - $ref: '../components/parameters.yaml#/sortTypeParam'
+    responses:
+      '200':
+        description: List of users
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: Users retrieved successfully
+                data:
+                  type: array
+                  items:
+                    $ref: '../components/schemas.yaml#/User'
+
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /admin/users
+                    user:
+                      type: string
+                      example: /admin/users/{id}
+                pagination:
+                  $ref: '../components/schemas.yaml#/Pagination'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  post:
+    summary: Create a new user
+    operationId: createUser
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserInput'
+    responses:
+      '201':
+        description: User created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 201
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: User created successfully
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /admin/users
+                    user:
+                      type: string
+                      example: /admin/users/{id}
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '409':
+        $ref: '../components/responses.yaml#/409'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+userById:
+  get:
+    summary: Get user by ID
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: User retrieved successfully
+                data:
+                  $ref: '../components/schemas.yaml#/User'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /admin/users/{id}
+                    users:
+                      type: string
+                      example: /admin/users
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  patch:
+    summary: Update user partially
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserInput'
+    responses:
+      '200':
+        description: User updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: User updated successfully
+                data:
+                  $ref: '../components/schemas.yaml#/User'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /admin/users/{id}
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  put:
+    summary: Update user
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserInput'
+    responses:
+      '200':
+        description: User updated successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: User updated successfully
+                data:
+                  $ref: '../components/schemas.yaml#/User'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /admin/users/{id}
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  delete:
+    summary: Delete user
+    security:
+      - BearerAuth: []
+    tags:
+      - Admin - Users
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '204':
+        description: User deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 204
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: User deleted successfully
+                links:
+                  type: object
+                  properties:
+                    users:
+                      type: string
+                      example: /admin/users
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'

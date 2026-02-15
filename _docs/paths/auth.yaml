@@ -1,0 +1,186 @@
+registerUser:
+  post:
+    summary: Register a new customer
+    tags:
+      - Auth
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: John Doe
+
+              email:
+                type: string
+                example: john.doe@mail.com
+                format: email
+              password:
+                type: string
+                example: password123
+                format: password
+            required:
+              - name
+              - email
+              - password
+    responses:
+      '201':
+        description: Customer registered successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/AuthResponse'
+            example:
+              code: 201
+              success: true
+              message: registered successfully
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refresh_token:
+                    type: string
+                    example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+              links:
+                self: /auth/register
+                login: /auth/login
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '409':
+        $ref: '../components/responses.yaml#/409'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+login:
+  post:
+    summary: Login a user
+    tags:
+      - Auth
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+                format: password
+            required:
+              - email
+              - password
+    responses:
+      '200':
+        description: User logged in successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/AuthResponse'
+            example:
+              code: 200
+              success: true
+              message: logged in successfully
+              data:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  refresh_token:
+                    type: string
+                    example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+              links:
+                self:
+                  type: string
+                  example: /auth/login
+                register:
+                  type: string
+                  example: /auth/register
+                provider_register:
+                  type: string
+                  example: /auth/provider/register
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+providerRegister:
+  post:
+    summary: Register a new provider
+    tags:
+      - Provider - Onboarding
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              restaurant_name:
+                type: string
+                example: Gourmet Bites
+
+              restaurant_address:
+                type: string
+                example: 456 Culinary Ave, Foodie City
+
+              owner_name:
+                type: string
+                example: Alice Johnson
+
+              email:
+                type: string
+                example: alice.johnson@mail.com
+                format: email
+              password:
+                type: string
+                example: securepassword
+                format: password
+            required:
+              - restaurant_name
+              - owner_name
+              - email
+              - password
+    responses:
+      '201':
+        description: Provider registered successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 201
+                success:
+                  type: boolean
+
+                  example: true
+                message:
+                  type: string
+
+                  example: registered successfully, check your email to verify your account
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      example: /auth/provider/register
+                    login:
+                      type: string
+                      example: /auth/login
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '409':
+        $ref: '../components/responses.yaml#/409'
+      '500':
+        $ref: '../components/responses.yaml#/500'
