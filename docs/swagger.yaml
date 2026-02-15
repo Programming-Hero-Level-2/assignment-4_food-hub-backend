@@ -1,0 +1,194 @@
+openapi: 3.0.0
+info:
+  title: Food Hub API
+  version: 1.0.0
+  description: API for Food Hub application which is food delivery service.
+
+servers:
+  - url: http://localhost:4000/api/v1
+    description: Local Development Server
+  - url: http://api.foodhub.com/api/v1
+    description: Production Server
+tags:
+  - name: Auth
+    description: Authentication endpoints for user (public)
+  - name: Provider - Onboarding
+    description: Authentication endpoints for providers (public)
+  - name: Admin - Users
+    description: Endpoints related to user management
+  - name: Public - Discovery
+    description: Public Endpoints discovery of restaurants, meals, categories, reviews, etc.
+  - name: Admin - Restaurants
+    description: Restaurant Endpoints (Admin only)
+  - name: Provider - Restaurants
+    description: Restaurant Endpoints (Provider only)
+  - name: Admin - Categories
+    description: Restaurant Category Endpoints (Admin only)
+  - name: Provider - Categories
+    description: Restaurant Category Endpoints (Provider only)
+  - name: Admin - Meals / Menu
+    description: Meal / Menu Endpoints (Admin only)
+  - name: Provider - Meals / Menu
+    description: Meal / Menu Endpoints (Provider only)
+  - name: Customer - Carts
+    description: Endpoints related to shopping cart management
+  - name: Provider - Carts
+    description: Endpoints related to shopping cart management for providers
+  - name: Admin - Carts
+    description: Endpoints related to shopping cart management for admins
+  - name: Customer - Orders
+    description: Endpoints related to order management for customers
+  - name: Provider - Orders
+    description: Endpoints related to order management for providers
+  - name: Admin - Orders
+    description: Endpoints related to order management for admins
+  - name: Customer - Reviews
+    description: Endpoints related to product reviews for customers
+  - name: Provider - Reviews
+    description: Endpoints related to product reviews for providers
+  - name: Admin - Reviews
+    description: Endpoints related to product reviews for admins
+
+paths:
+  /auth/register:
+    $ref: './paths/auth.yaml#/register'
+  /auth/login:
+    $ref: './paths/auth.yaml#/login'
+  /auth/provider/register:
+    $ref: './paths/auth.yaml#/providerRegister'
+
+  # Admin user management endpoints
+  /admin/users:
+    $ref: './paths/users.yaml#/users'
+  /admin/users/{id}:
+    $ref: './paths/users.yaml#/userById'
+
+  # Admin Restaurant Management Endpoints
+  /admin/restaurants:
+    $ref: './paths/restaurants.yaml#/adminRestaurants'
+  /admin/restaurants/{id}:
+    $ref: './paths/restaurants.yaml#/adminRestaurantById'
+
+  # Private restaurant endpoints for providers and admins
+  /provider/restaurants:
+    $ref: './paths/restaurants.yaml#/providerRestaurants'
+  /provider/restaurants/{id}:
+    $ref: './paths/restaurants.yaml#/providerRestaurantById'
+
+  # Public restaurant endpoints for customers
+  /public/restaurants:
+    $ref: './paths/restaurants.yaml#/publicRestaurants'
+  /public/restaurants/{id}:
+    $ref: './paths/restaurants.yaml#/publicRestaurantById'
+  /public/restaurants/{id}/menu:
+    $ref: './paths/restaurants.yaml#/publicRestaurantMenu'
+
+  # Provider category endpoints for providers and admins
+  /provider/categories:
+    $ref: './paths/categories.yaml#/providerCategory'
+  /provider/categories/{id}:
+    $ref: './paths/categories.yaml#/providerCategoryById'
+
+  # Admin category endpoints for admins (Admin Only)
+  /admin/categories:
+    $ref: './paths/categories.yaml#/adminCategory'
+  /admin/categories/{id}:
+    $ref: './paths/categories.yaml#/adminCategoryById'
+
+  # public category endpoints for customers
+  /public/categories:
+    $ref: './paths/categories.yaml#/publicCategories'
+  /public/categories/{id}:
+    $ref: './paths/categories.yaml#/publicCategoryById'
+  /public/restaurants/{id}/categories:
+    $ref: './paths/categories.yaml#/publicCategoryByRestaurant'
+
+  # Private meals / menu endpoints for providers and admins
+  # /private/meals:
+  #   $ref: './paths/meals.yaml#/privateMeals'
+  # /private/meals/{id}:
+  #   $ref: './paths/meals.yaml#/privateMealById'
+
+  # Provider meals / menu management endpoints for providers only
+  # TODO: Change the paths to be more RESTful and consistent with other endpoints (e.g. /provider/restaurants/me/meals and /provider/restaurants/me/meals/{mealId})
+  # /provider/restaurants/me/meals:
+  #   $ref: './paths/meals.yaml#/providerMeals'
+  # /provider/restaurants/me/meals/{mealId}:
+  #   $ref: './paths/meals.yaml#/providerMealById'
+
+  /provider/restaurants/{id}/meals:
+    $ref: './paths/meals.yaml#/providerMeals'
+  /provider/restaurants/me/meals:
+    $ref: './paths/meals.yaml#/createProviderMeals'
+  /provider/restaurants/{id}/meals/{mealId}:
+    $ref: './paths/meals.yaml#/providerMealById'
+
+  # Admin meals / menu management endpoints for admins only
+  /admin/meals:
+    $ref: './paths/meals.yaml#/adminMeals'
+  /admin/meals/{id}:
+    $ref: './paths/meals.yaml#/adminMealById'
+
+  # /admin/restaurants/{id}/meals:
+  #   $ref: './paths/meals.yaml#/adminMeals'
+  # /admin/restaurants/{id}/meals/{mealId}:
+  #   $ref: './paths/meals.yaml#/adminMealById'
+
+  # Public meals / menu endpoints for customers
+  /public/restaurants/{id}/meals:
+    $ref: './paths/meals.yaml#/publicMeals'
+  /public/restaurants/{id}/meals/{mealId}:
+    $ref: './paths/meals.yaml#/publicMealById'
+
+  # public carts endpoints for customers
+  /customer/carts:
+    $ref: './paths/carts.yaml#/customerCarts'
+  /customer/restaurants/{id}/cart:
+    $ref: './paths/carts.yaml#/customerCartByRestaurant'
+
+  /customer/carts/{cartId}:
+    $ref: './paths/carts.yaml#/customerCartById'
+
+components:
+  schemas:
+    User:
+      $ref: './components/schemas.yaml#/User'
+    Timestamps:
+      $ref: './components/schemas.yaml#/Timestamps'
+    Restaurant:
+      $ref: './components/schemas.yaml#/Restaurant'
+    Category:
+      $ref: './components/schemas.yaml#/Category'
+    Meal:
+      $ref: './components/schemas.yaml#/Meal'
+    RestaurantCreateDTO:
+      $ref: './components/schemas.yaml#/RestaurantCreateDTO'
+    RestaurantUpdateDTO:
+      $ref: './components/schemas.yaml#/RestaurantUpdateDTO'
+    ProviderDTO:
+      $ref: './components/schemas.yaml#/ProviderDTO'
+    RestaurantCategoryDTO:
+      $ref: './components/schemas.yaml#/RestaurantCategoryDTO'
+    RestaurantCategoryCreateDTO:
+      $ref: './components/schemas.yaml#/RestaurantCategoryCreateDTO'
+    RestaurantCategoryUpdateDTO:
+      $ref: './components/schemas.yaml#/RestaurantCategoryUpdateDTO'
+    RestaurantRatingDTO:
+      $ref: './components/schemas.yaml#/RestaurantRatingDTO'
+    MealCreateDTO:
+      $ref: './components/schemas.yaml#/MealCreateDTO'
+    MealUpdateDTO:
+      $ref: './components/schemas.yaml#/MealUpdateDTO'
+    TokenResponse:
+      $ref: './components/schemas.yaml#/TokenResponse'
+    AuthResponse:
+      $ref: './components/schemas.yaml#/AuthResponse'
+    Pagination:
+      $ref: './components/schemas.yaml#/Pagination'
+  responses:
+    $ref: './components/responses.yaml'
+  securitySchemes:
+    BearerAuth:
+      $ref: './components/securitySchemes.yaml#/BearerAuth'
+  parameters:
+    $ref: './components/parameters.yaml'

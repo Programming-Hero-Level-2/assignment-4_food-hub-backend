@@ -8,6 +8,10 @@
     "target": "ES2023",
     "strict": true,
     "esModuleInterop": true,
-    "ignoreDeprecations": "5.0"
-  }
+    "ignoreDeprecations": "5.0",
+
+    "resolveJsonModule": true
+  },
+
+  "include": ["src", "docs"]
 }
