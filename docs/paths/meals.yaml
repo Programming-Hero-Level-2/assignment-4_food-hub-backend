@@ -1,0 +1,1180 @@
+providerMeals:
+  get:
+    summary: Get all meals (Private)
+    operationId: getAllMealsPrivate
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+      - $ref: '../components/parameters.yaml#/pageParam'
+      - $ref: '../components/parameters.yaml#/limitParam'
+      - $ref: '../components/parameters.yaml#/filterParam'
+      - $ref: '../components/parameters.yaml#/sortByParam'
+      - $ref: '../components/parameters.yaml#/sortTypeParam'
+      - $ref: '../components/parameters.yaml#/searchParam'
+    responses:
+      '200':
+        description: meals retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meals retrieved successfully
+                data:
+                  type: array
+                  items:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c0012345678
+                          name:
+                            type: string
+                            format: name
+                            example: Spaghetti Carbonara
+                          description:
+                            type: string
+                            format: description
+                            example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+                          slug:
+                            type: string
+                            format: slug
+                            example: spaghetti-carbonara
+                          price:
+                            type: number
+                            format: float
+                            example: 12.99
+                          discount:
+                            type: number
+                            format: float
+                            example: 0.15
+                          discount_type:
+                            type: string
+                            format: discountType
+                            example: PERCENT
+                            default: null
+                            enum: [PERCENT, FLAT, null]
+                          status:
+                            type: string
+                            format: status
+                            example: AVAILABLE
+                            enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+                          restaurantId:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c001234567
+                          categoryId:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c001234567
+                          imageUrl:
+                            type: string
+                            format: uri
+                            example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+                          thumbnails:
+                            type: array
+                            items:
+                              type: string
+                              format: uri
+                              example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+                          categories:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: 64b64c4f2f9b9c001234567
+                                name:
+                                  type: string
+                                  format: name
+                                  example: Italian
+                      - $ref: '../components/schemas.yaml#/Timestamps'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      format: uri
+                      example: /private/meals
+                    next:
+                      type: string
+                      format: uri
+                      example: /private/meals?page=3&limit=10
+                    prev:
+                      type: string
+                      format: uri
+                      example: /private/meals?page=1&limit=10
+                    meal:
+                      type: string
+                      format: uri
+                      example: /private/meals/c6f1e8e2-3b5b-4d2a-9f7e-2d6f4e8e2a3b
+                    restaurants:
+                      type: string
+                      format: uri
+                      example: /private/restaurants
+                    categories:
+                      type: string
+                      format: uri
+                      example: /private/categories
+                pagination:
+                  $ref: '../components/schemas.yaml#/Pagination'
+
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  
+createProviderMeals:  
+  post:
+    summary: Create a new meal (Private)
+    operationId: createMealProvider
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+            required:
+              - name
+              - description
+              - price
+              - restaurantId
+              - categoryId
+              - status
+    responses:
+      '201':
+        description: meal created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 201
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal created successfully
+                data:
+                  $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+providerMealById:
+  get:
+    summary: Get meal by ID (Private)
+    operationId: getMealByIdProvider
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: meal retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal retrieved successfully
+                data:
+                  $ref: '../components/schemas.yaml#/Meal'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  patch:
+    summary: Update meal by ID (Private)
+    operationId: updateMealByIdProvider
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+    responses:
+      '200':
+        description: meal updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  put:
+    summary: Replace meal by ID (Private)
+    operationId: replaceMealByIdProvider
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth:
+          - Admin: true
+          - Provider: true
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+              required:
+                - name
+                - description
+                - price
+                - restaurantId
+                - categoryId
+                - status
+    responses:
+      '200':
+        description: meal replaced successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+  delete:
+    summary: Delete meal by ID (Private)
+    operationId: deleteMealByIdProvider
+    tags:
+      - Provider - Meals / Menu
+    security:
+      - BearerAuth:
+          - Admin: true
+          - Provider: true
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: meal deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal deleted successfully
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+# Admin Meal / Menu-items Management
+adminMeals:
+  get:
+    summary: Get all meals (Private)
+    operationId: getAllMealsPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/pageParam'
+      - $ref: '../components/parameters.yaml#/limitParam'
+      - $ref: '../components/parameters.yaml#/filterParam'
+      - $ref: '../components/parameters.yaml#/sortByParam'
+      - $ref: '../components/parameters.yaml#/sortTypeParam'
+      - $ref: '../components/parameters.yaml#/searchParam'
+    responses:
+      '200':
+        description: meals retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meals retrieved successfully
+                data:
+                  type: array
+                  items:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c0012345678
+                          name:
+                            type: string
+                            format: name
+                            example: Spaghetti Carbonara
+                          description:
+                            type: string
+                            format: description
+                            example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+                          slug:
+                            type: string
+                            format: slug
+                            example: spaghetti-carbonara
+                          price:
+                            type: number
+                            format: float
+                            example: 12.99
+                          discount:
+                            type: number
+                            format: float
+                            example: 0.15
+                          discount_type:
+                            type: string
+                            format: discountType
+                            example: PERCENT
+                            default: null
+                            enum: [PERCENT, FLAT, null]
+                          status:
+                            type: string
+                            format: status
+                            example: AVAILABLE
+                            enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+                          restaurantId:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c001234567
+                          categoryId:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c001234567
+                          imageUrl:
+                            type: string
+                            format: uri
+                            example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+                          thumbnails:
+                            type: array
+                            items:
+                              type: string
+                              format: uri
+                              example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+                          categories:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  format: uuid
+                                  example: 64b64c4f2f9b9c001234567
+                                name:
+                                  type: string
+                                  format: name
+                                  example: Italian
+                      - $ref: '../components/schemas.yaml#/Timestamps'
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      format: uri
+                      example: /private/meals
+                    next:
+                      type: string
+                      format: uri
+                      example: /private/meals?page=3&limit=10
+                    prev:
+                      type: string
+                      format: uri
+                      example: /private/meals?page=1&limit=10
+                    meal:
+                      type: string
+                      format: uri
+                      example: /private/meals/c6f1e8e2-3b5b-4d2a-9f7e-2d6f4e8e2a3b
+                    restaurants:
+                      type: string
+                      format: uri
+                      example: /private/restaurants
+                    categories:
+                      type: string
+                      format: uri
+                      example: /private/categories
+                pagination:
+                  $ref: '../components/schemas.yaml#/Pagination'
+
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  post:
+    summary: Create a new meal (Private)
+    operationId: createMealPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+            required:
+              - name
+              - description
+              - price
+              - restaurantId
+              - categoryId
+              - status
+    responses:
+      '201':
+        description: meal created successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 201
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal created successfully
+                data:
+                  $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+adminMealById:
+  get:
+    summary: Get meal by ID (Private)
+    operationId: getMealByIdPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: meal retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal retrieved successfully
+                data:
+                  $ref: '../components/schemas.yaml#/Meal'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  patch:
+    summary: Update meal by ID (Private)
+    operationId: updateMealByIdPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth: []
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+    responses:
+      '200':
+        description: meal updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+  put:
+    summary: Replace meal by ID (Private)
+    operationId: replaceMealByIdPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth:
+          - Admin: true
+          - Provider: true
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                format: name
+                example: Spaghetti Carbonara
+              description:
+                type: string
+                format: description
+                example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+              price:
+                type: number
+                format: float
+                example: 12.99
+              discount:
+                type: number
+                format: float
+                example: 0.15
+              discount_type:
+                type: string
+                format: discountType
+                example: PERCENT
+                default: null
+                enum: [PERCENT, FLAT, null]
+              restaurantId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              categoryId:
+                type: string
+                format: uuid
+                example: 64b64c4f2f9b9c0012345678
+              imageUrl:
+                type: string
+                format: uri
+                example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+              thumbnails:
+                type: array
+                items:
+                  type: string
+                  format: uri
+                  example: https://example.com/imageUrls/spaghetti-carbonara-thumb.jpg
+              status:
+                type: string
+                format: status
+                example: AVAILABLE
+                enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+              required:
+                - name
+                - description
+                - price
+                - restaurantId
+                - categoryId
+                - status
+    responses:
+      '200':
+        description: meal replaced successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/MealCreateDTO'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+  delete:
+    summary: Delete meal by ID (Private)
+    operationId: deleteMealByIdPrivate
+    tags:
+      - Admin - Meals / Menu
+    security:
+      - BearerAuth:
+          - Admin: true
+          - Provider: true
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: meal deleted successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal deleted successfully
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '401':
+        $ref: '../components/responses.yaml#/401'
+      '403':
+        $ref: '../components/responses.yaml#/403'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+publicMeals:
+  get:
+    summary: Get all meals (Public)
+    operationId: getAllMealsPublic
+    tags:
+      - Public - Discovery
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+      - $ref: '../components/parameters.yaml#/pageParam'
+      - $ref: '../components/parameters.yaml#/limitParam'
+      - $ref: '../components/parameters.yaml#/filterParam'
+      - $ref: '../components/parameters.yaml#/sortByParam'
+      - $ref: '../components/parameters.yaml#/sortTypeParam'
+      - $ref: '../components/parameters.yaml#/searchParam'
+    responses:
+      '200':
+        description: meals retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meals retrieved successfully
+                data:
+                  type: array
+                  items:
+                    allOf:
+                      - type: object
+                        properties:
+                          id:
+                            type: string
+                            format: uuid
+                            example: 64b64c4f2f9b9c0012345678
+                          name:
+                            type: string
+                            format: name
+                            example: Spaghetti Carbonara
+                          description:
+                            type: string
+                            format: description
+                            example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+                          slug:
+                            type: string
+                            format: slug
+                            example: spaghetti-carbonara
+                          price:
+                            type: number
+                            format: float
+                            example: 12.99
+                          discount:
+                            type: number
+                            format: float
+                            example: 0.15
+                          discount_type:
+                            type: string
+                            format: discountType
+                            example: PERCENT
+                            default: null
+                            enum: [PERCENT, FLAT, null]
+                          status:
+                            type: string
+                            format: status
+                            example: AVAILABLE
+                            enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+                          imageUrl:
+                            type: string
+                            format: uri
+                            example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+                        required:
+                          - id
+                          - name
+                          - description
+                          - slug
+                          - price
+                          - status
+                links:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      format: uri
+                      example: /meals
+                    next:
+                      type: string
+                      format: uri
+                      example: /meals?page=3&limit=10
+                    prev:
+                      type: string
+                      format: uri
+                      example: /meals?page=1&limit=10
+                    meal:
+                      type: string
+                      format: uri
+                      example: /meals/c6f1e8e2-3b5b-4d2a-9f7e-2d6f4e8e2a3b
+                    restaurants:
+                      type: string
+                      format: uri
+                      example: /restaurants
+                    categories:
+                      type: string
+                      format: uri
+                      example: /categories
+                pagination:
+                  $ref: '../components/schemas.yaml#/Pagination'
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+publicMealById:
+  get:
+    summary: Get meal by ID (Public)
+    operationId: getMealByIdPublic
+    tags:
+      - Public - Discovery
+    parameters:
+      - $ref: '../components/parameters.yaml#/idPathParam'
+    responses:
+      '200':
+        description: meal retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                  example: 200
+                success:
+                  type: boolean
+                  format: boolean
+                  example: true
+                message:
+                  type: string
+                  format: message
+                  example: meal retrieved successfully
+                data:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      example: 64b64c4f2f9b9c0012345678
+                    name:
+                      type: string
+                      format: name
+                      example: Spaghetti Carbonara
+                    description:
+                      type: string
+                      format: description
+                      example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+                    price:
+                      type: number
+                      format: float
+                      example: 12.99
+                    discount:
+                      type: number
+                      format: float
+                      example: 0.15
+                    discount_type:
+                      type: string
+                      format: discountType
+                      example: PERCENT
+                      default: null
+                      enum: [PERCENT, FLAT, null]
+                    imageUrl:
+                      type: string
+                      format: uri
+                      example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+                link:
+                  type: object
+                  properties:
+                    self:
+                      type: string
+                      format: uri
+                      example: /meals/c6f1e8e2-3b5b-4d2a-9f7e-2d6f4e8e2a3b
+
+      '400':
+        $ref: '../components/responses.yaml#/400'
+      '404':
+        $ref: '../components/responses.yaml#/404'
+      '500':
+        $ref: '../components/responses.yaml#/500'
+
+
