@@ -9,6 +9,7 @@ servers:
     description: Local Development Server
   - url: http://api.foodhub.com/api/v1
     description: Production Server
+
 tags:
   - name: Auth
     description: Authentication endpoints for user (public)
@@ -51,144 +52,1942 @@ tags:
 
 paths:
   /auth/register:
-    $ref: './paths/auth.yaml#/register'
+    post:
+      summary: Register a new customer
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@mail.com
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                  example: password123
+              required:
+                - name
+                - email
+                - password
+      responses:
+        '201':
+          description: Customer registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+
   /auth/login:
-    $ref: './paths/auth.yaml#/login'
+    post:
+      summary: Login a user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                  minLength: 6
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+
   /auth/provider/register:
-    $ref: './paths/auth.yaml#/providerRegister'
+    post:
+      summary: Register a new provider
+      tags:
+        - Provider - Onboarding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                restaurant_name:
+                  type: string
+                  example: Gourmet Bites
+                restaurant_address:
+                  type: string
+                  example: 456 Culinary Ave, Foodie City
+                owner_name:
+                  type: string
+                  example: Alice Johnson
+                email:
+                  type: string
+                  example: alice.johnson@mail.com
+                  format: email
+                password:
+                  type: string
+                  example: securepassword
+                  format: password
+              required:
+                - restaurant_name
+                - owner_name
+                - email
+                - password
+      responses:
+        '201':
+          description: Provider registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: registered successfully, check your email to verify your account
+        '400':
+          $ref: '#/components/responses/400'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Admin user management endpoints
   /admin/users:
-    $ref: './paths/users.yaml#/users'
+    get:
+      summary: Get all users
+      operationId: getUsers
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/searchParam'
+        - $ref: '#/components/parameters/filterParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Users retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      summary: Create a new user
+      operationId: createUser
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User created successfully
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '409':
+          $ref: '#/components/responses/409'
+        '500':
+          $ref: '#/components/responses/500'
+
   /admin/users/{id}:
-    $ref: './paths/users.yaml#/userById'
+    get:
+      summary: Get user by ID
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      summary: Update user partially
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User updated successfully
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    put:
+      summary: Update user
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User updated successfully
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Delete user
+      security:
+        - BearerAuth: []
+      tags:
+        - Admin - Users
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '204':
+          description: User deleted successfully
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Admin Restaurant Management Endpoints
-  /admin/restaurants:
-    $ref: './paths/restaurants.yaml#/adminRestaurants'
-  /admin/restaurants/{id}:
-    $ref: './paths/restaurants.yaml#/adminRestaurantById'
-
-  # Private restaurant endpoints for providers and admins
-  /provider/restaurants:
-    $ref: './paths/restaurants.yaml#/providerRestaurants'
-  /provider/restaurants/{id}:
-    $ref: './paths/restaurants.yaml#/providerRestaurantById'
-
-  # Public restaurant endpoints for customers
   /public/restaurants:
-    $ref: './paths/restaurants.yaml#/publicRestaurants'
+    get:
+      summary: Get all restaurants (Public)
+      operationId: getAllRestaurants
+      tags:
+        - Public - Discovery
+      responses:
+        '200':
+          description: A list of restaurants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurants retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Restaurant'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+
   /public/restaurants/{id}:
-    $ref: './paths/restaurants.yaml#/publicRestaurantById'
-  /public/restaurants/{id}/menu:
-    $ref: './paths/restaurants.yaml#/publicRestaurantMenu'
+    get:
+      summary: Get restaurant by ID (Public)
+      operationId: getRestaurantById
+      tags:
+        - Public - Discovery
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Restaurant details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Provider category endpoints for providers and admins
-  /provider/categories:
-    $ref: './paths/categories.yaml#/providerCategory'
-  /provider/categories/{id}:
-    $ref: './paths/categories.yaml#/providerCategoryById'
-
-  # Admin category endpoints for admins (Admin Only)
-  /admin/categories:
-    $ref: './paths/categories.yaml#/adminCategory'
-  /admin/categories/{id}:
-    $ref: './paths/categories.yaml#/adminCategoryById'
-
-  # public category endpoints for customers
   /public/categories:
-    $ref: './paths/categories.yaml#/publicCategories'
+    get:
+      summary: Get all active restaurant categories (Public)
+      operationId: getActiveRestaurantCategories
+      tags:
+        - Public - Discovery
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: A list of active restaurant categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Active restaurant categories retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+
   /public/categories/{id}:
-    $ref: './paths/categories.yaml#/publicCategoryById'
-  /public/restaurants/{id}/categories:
-    $ref: './paths/categories.yaml#/publicCategoryByRestaurant'
+    get:
+      summary: Get an active restaurant category by ID (Public)
+      operationId: getActiveRestaurantCategoryById
+      tags:
+        - Public - Discovery
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Active restaurant category details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Active restaurant category retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Private meals / menu endpoints for providers and admins
-  # /private/meals:
-  #   $ref: './paths/meals.yaml#/privateMeals'
-  # /private/meals/{id}:
-  #   $ref: './paths/meals.yaml#/privateMealById'
+  /provider/restaurants:
+    get:
+      summary: Get all restaurants (Provider)
+      security:
+        - BearerAuth: []
+      operationId: getAllRestaurantsProvider
+      tags:
+        - Provider - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/searchParam'
+        - $ref: '#/components/parameters/filterParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+      responses:
+        '200':
+          description: A list of restaurants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurants retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Restaurant'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Provider meals / menu management endpoints for providers only
-  # TODO: Change the paths to be more RESTful and consistent with other endpoints (e.g. /provider/restaurants/me/meals and /provider/restaurants/me/meals/{mealId})
-  # /provider/restaurants/me/meals:
-  #   $ref: './paths/meals.yaml#/providerMeals'
-  # /provider/restaurants/me/meals/{mealId}:
-  #   $ref: './paths/meals.yaml#/providerMealById'
+  /provider/restaurants/{id}:
+    get:
+      summary: Get restaurant by ID (Provider)
+      security:
+        - BearerAuth: []
+      operationId: getRestaurantByIdProvider
+      tags:
+        - Provider - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Restaurant details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      summary: Update restaurant by ID (Provider)
+      security:
+        - BearerAuth: []
+      operationId: updateRestaurantByIdProvider
+      tags:
+        - Provider - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Pizza Palace
+                opening_time:
+                  type: string
+                  example: '10:00 AM'
+                closing_time:
+                  type: string
+                  example: '10:00 PM'
+                address:
+                  type: string
+                  example: 123 Main St, Cityville
+      responses:
+        '200':
+          description: Restaurant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantUpdateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  /provider/restaurants/{id}/meals:
-    $ref: './paths/meals.yaml#/providerMeals'
-  /provider/restaurants/me/meals:
-    $ref: './paths/meals.yaml#/createProviderMeals'
-  /provider/restaurants/{id}/meals/{mealId}:
-    $ref: './paths/meals.yaml#/providerMealById'
+  /admin/restaurants:
+    get:
+      summary: Get all restaurants (Admin)
+      security:
+        - BearerAuth: []
+      operationId: getAllRestaurantsAdmin
+      tags:
+        - Admin - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/searchParam'
+        - $ref: '#/components/parameters/filterParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+      responses:
+        '200':
+          description: A list of restaurants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurants retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Restaurant'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      summary: Create a new restaurant (Admin)
+      security:
+        - BearerAuth: []
+      operationId: createRestaurantAdmin
+      tags:
+        - Admin - Restaurants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Pizza Palace
+                opening_time:
+                  type: string
+                  example: '10:00 AM'
+                closing_time:
+                  type: string
+                  example: '10:00 PM'
+                address:
+                  type: string
+                  example: 123 Main St, Cityville
+              required:
+                - name
+                - opening_time
+                - closing_time
+                - address
+      responses:
+        '201':
+          description: Restaurant created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCreateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Admin meals / menu management endpoints for admins only
-  /admin/meals:
-    $ref: './paths/meals.yaml#/adminMeals'
-  /admin/meals/{id}:
-    $ref: './paths/meals.yaml#/adminMealById'
+  /admin/restaurants/{id}:
+    get:
+      summary: Get restaurant by ID (Admin)
+      security:
+        - BearerAuth: []
+      operationId: getRestaurantByIdAdmin
+      tags:
+        - Admin - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Restaurant details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Restaurant'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      summary: Update restaurant by ID (Admin)
+      security:
+        - BearerAuth: []
+      operationId: updateRestaurantByIdAdmin
+      tags:
+        - Admin - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Pizza Palace
+                opening_time:
+                  type: string
+                  example: '10:00 AM'
+                closing_time:
+                  type: string
+                  example: '10:00 PM'
+                address:
+                  type: string
+                  example: 123 Main St, Cityville
+      responses:
+        '200':
+          description: Restaurant updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantUpdateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Delete restaurant by ID (Admin)
+      security:
+        - BearerAuth: []
+      operationId: deleteRestaurantByIdAdmin
+      tags:
+        - Admin - Restaurants
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '204':
+          description: Restaurant deleted successfully
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # /admin/restaurants/{id}/meals:
-  #   $ref: './paths/meals.yaml#/adminMeals'
-  # /admin/restaurants/{id}/meals/{mealId}:
-  #   $ref: './paths/meals.yaml#/adminMealById'
+  /provider/categories:
+    get:
+      summary: Get all restaurant categories (Provider)
+      operationId: getAllCategoriesProvider
+      tags:
+        - Provider - Categories
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: A list of restaurant categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant categories retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      summary: Create a new restaurant category (Provider)
+      security:
+        - BearerAuth: []
+      operationId: createCategoryProvider
+      tags:
+        - Provider - Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fast Food
+                description:
+                  type: string
+                  nullable: true
+                  example: Category for fast food restaurants
+                imageUrl:
+                  type: string
+                  nullable: true
+                  format: uri
+                  example: https://example.com/imageUrls/fast-food.jpg
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: active
+              required:
+                - name
+                - status
+      responses:
+        '201':
+          description: Restaurant category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategoryCreateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # Public meals / menu endpoints for customers
-  /public/restaurants/{id}/meals:
-    $ref: './paths/meals.yaml#/publicMeals'
-  /public/restaurants/{id}/meals/{mealId}:
-    $ref: './paths/meals.yaml#/publicMealById'
+  /provider/categories/{id}:
+    get:
+      summary: Get a restaurant category by ID (Provider)
+      security:
+        - BearerAuth: []
+      operationId: getCategoryByIdProvider
+      tags:
+        - Provider - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Restaurant category details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant category retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      summary: Update a restaurant category (Provider)
+      security:
+        - BearerAuth: []
+      operationId: updateCategoryProvider
+      tags:
+        - Provider - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fast Food
+                description:
+                  type: string
+                  nullable: true
+                  example: Category for fast food restaurants
+                imageUrl:
+                  type: string
+                  nullable: true
+                  format: uri
+                  example: https://example.com/imageUrls/fast-food.jpg
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: active
+      responses:
+        '200':
+          description: Restaurant category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategoryUpdateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Delete a restaurant category (Provider)
+      security:
+        - BearerAuth: []
+      operationId: deleteCategoryProvider
+      tags:
+        - Provider - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '204':
+          description: Restaurant category deleted successfully
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
-  # public carts endpoints for customers
-  /customer/carts:
-    $ref: './paths/carts.yaml#/customerCarts'
-  /customer/restaurants/{id}/cart:
-    $ref: './paths/carts.yaml#/customerCartByRestaurant'
+  /admin/categories:
+    get:
+      summary: Get all restaurant categories (Admin)
+      operationId: getAllCategoriesAdmin
+      tags:
+        - Admin - Categories
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: A list of restaurant categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant categories retrieved successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      summary: Create a new restaurant category (Admin)
+      security:
+        - BearerAuth: []
+      operationId: createCategoryAdmin
+      tags:
+        - Admin - Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fast Food
+                description:
+                  type: string
+                  nullable: true
+                  example: Category for fast food restaurants
+                imageUrl:
+                  type: string
+                  nullable: true
+                  format: uri
+                  example: https://example.com/imageUrls/fast-food.jpg
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: active
+              required:
+                - name
+                - status
+      responses:
+        '201':
+          description: Restaurant category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategoryCreateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '500':
+          $ref: '#/components/responses/500'
 
-  /customer/carts/{cartId}:
-    $ref: './paths/carts.yaml#/customerCartById'
+  /admin/categories/{id}:
+    get:
+      summary: Get a restaurant category by ID (Admin)
+      security:
+        - BearerAuth: []
+      operationId: getCategoryByIdAdmin
+      tags:
+        - Admin - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '200':
+          description: Restaurant category details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Restaurant category retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    patch:
+      summary: Update a restaurant category (Admin)
+      security:
+        - BearerAuth: []
+      operationId: updateCategoryAdmin
+      tags:
+        - Admin - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Fast Food
+                description:
+                  type: string
+                  nullable: true
+                  example: Category for fast food restaurants
+                imageUrl:
+                  type: string
+                  nullable: true
+                  format: uri
+                  example: https://example.com/imageUrls/fast-food.jpg
+                status:
+                  type: string
+                  enum: [active, inactive]
+                  example: active
+      responses:
+        '200':
+          description: Restaurant category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantCategoryUpdateDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      summary: Delete a restaurant category (Admin)
+      security:
+        - BearerAuth: []
+      operationId: deleteCategoryAdmin
+      tags:
+        - Admin - Categories
+      parameters:
+        - $ref: '#/components/parameters/idPathParam'
+      responses:
+        '204':
+          description: Restaurant category deleted successfully
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 
 components:
   schemas:
-    User:
-      $ref: './components/schemas.yaml#/User'
     Timestamps:
-      $ref: './components/schemas.yaml#/Timestamps'
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - createdAt
+        - updatedAt
+
+    User:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: 64b64c4f2f9b9c001234567
+            name:
+              type: string
+              example: John Doe
+            email:
+              type: string
+              example: john.doe@mail.com
+              format: email
+            phone:
+              type: string
+              example: +8801712345678
+            role:
+              type: string
+              example: customer
+              enum: [customer, provider, admin]
+            status:
+              type: string
+              example: active
+              enum: [pending, active, suspended]
+            email_verified_at:
+              type: string
+              format: date-time
+              nullable: true
+              example: 2024-06-01T12:00:00Z
+          required:
+            - id
+            - name
+            - email
+            - role
+            - status
+        - $ref: '#/components/schemas/Timestamps'
+
+    UserInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@mail.com
+          format: email
+        password:
+          type: string
+          example: password123
+          format: password
+        address:
+          type: string
+          example: 123 Main St, Cityville
+        phone:
+          type: string
+          example: +8801712345678
+        role:
+          type: string
+          example: customer
+          enum: [customer, provider, admin]
+        status:
+          type: string
+          example: active
+          enum: [pending, active, suspended]
+      required:
+        - name
+        - email
+        - password
+        - role
+        - status
+
     Restaurant:
-      $ref: './components/schemas.yaml#/Restaurant'
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: c6f1e8e2-3b5b-4d2a-9f7e-2d6f4e8e2a3b
+            name:
+              type: string
+              example: Pizza Palace
+            providerId:
+              type: string
+              format: uuid
+              example: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+            opening_time:
+              type: string
+              example: '10:00 AM'
+            closing_time:
+              type: string
+              example: '10:00 PM'
+            address:
+              type: string
+              example: 123 Main St, Cityville
+            latitude:
+              type: number
+              example: 40.7128
+            longitude:
+              type: number
+              example: -74.0060
+            logo:
+              type: string
+              example: http://example.com/logo.png
+              format: uri
+            cover:
+              type: string
+              example: http://example.com/cover.jpg
+              format: uri
+            status:
+              type: string
+              example: active
+              enum: [active, inactive]
+            opening_status:
+              type: string
+              enum:
+                - open
+                - closed
+              example: open
+          required:
+            - id
+            - name
+            - providerId
+            - opening_time
+            - closing_time
+            - address
+            - status
+            - opening_status
+        - $ref: '#/components/schemas/Timestamps'
+
     Category:
-      $ref: './components/schemas.yaml#/Category'
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6
+        name:
+          type: string
+          example: Italian
+        description:
+          type: string
+          example: Authentic Italian cuisine
+        status:
+          type: string
+          example: active
+          enum: [active, inactive]
+        imageUrl:
+          type: string
+          nullable: true
+          format: uri
+          example: https://example.com/imageUrls/italian.jpg
+        createdBy:
+          type: string
+          format: uuid
+          example: 64b64c4f2f9b9c001234567
+        parent:
+          type: string
+          nullable: true
+          format: uuid
+          example: 64b64c4f2f9b9c001234560
+        sub_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                example: b1c2d3e4-f5a6-7b8c-9d0e-f1a2b3c4d5e6
+              name:
+                type: string
+                example: Pizza
+      required:
+        - id
+        - name
+        - status
+        - createdBy
+
     Meal:
-      $ref: './components/schemas.yaml#/Meal'
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: e1f2a3b4-c5d6-7e8f-9a0b-1c2d3e4f5a6b
+            name:
+              type: string
+              example: Spaghetti Carbonara
+            description:
+              type: string
+              example: Classic Italian pasta dish with eggs, cheese, pancetta, and pepper.
+            slug:
+              type: string
+              example: spaghetti-carbonara
+            price:
+              type: number
+              example: 12.99
+            discount:
+              type: number
+              example: 0.15
+            discount_type:
+              type: string
+              example: PERCENT
+              default: null
+              enum: [PERCENT, FLAT, null]
+            status:
+              type: string
+              example: AVAILABLE
+              enum: [AVAILABLE, UNAVAILABLE, STOCK_OUT, ARCHIVED]
+            restaurantId:
+              type: string
+              format: uuid
+              example: 64b64c4f2f9b9c001234567
+            categoryId:
+              type: string
+              format: uuid
+              example: 64b64c4f2f9b9c001234567
+            imageUrl:
+              type: string
+              format: uri
+              example: https://example.com/imageUrls/spaghetti-carbonara.jpg
+          required:
+            - id
+            - name
+            - slug
+            - price
+            - discount
+            - discount_type
+            - status
+            - restaurantId
+            - categoryId
+            - imageUrl
+        - $ref: '#/components/schemas/Timestamps'
+
     RestaurantCreateDTO:
-      $ref: './components/schemas.yaml#/RestaurantCreateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 201
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Restaurant created successfully
+        data:
+          $ref: '#/components/schemas/Restaurant'
+
     RestaurantUpdateDTO:
-      $ref: './components/schemas.yaml#/RestaurantUpdateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Restaurant updated successfully
+        data:
+          $ref: '#/components/schemas/Restaurant'
+
     ProviderDTO:
-      $ref: './components/schemas.yaml#/ProviderDTO'
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+          format: email
+
     RestaurantCategoryDTO:
-      $ref: './components/schemas.yaml#/RestaurantCategoryDTO'
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: a1b2c3d4-e5f6-7a8b-9c0d-e1f2a3b4c5d6
+        name:
+          type: string
+          example: Italian
+        description:
+          type: string
+          example: Authentic Italian cuisine
+      required:
+        - id
+        - name
+
     RestaurantCategoryCreateDTO:
-      $ref: './components/schemas.yaml#/RestaurantCategoryCreateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 201
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Restaurant category created successfully
+        data:
+          $ref: '#/components/schemas/Category'
+
     RestaurantCategoryUpdateDTO:
-      $ref: './components/schemas.yaml#/RestaurantCategoryUpdateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Restaurant category updated successfully
+        data:
+          $ref: '#/components/schemas/Category'
+
     RestaurantRatingDTO:
-      $ref: './components/schemas.yaml#/RestaurantRatingDTO'
+      type: object
+      properties:
+        average:
+          type: number
+          example: 4.5
+        count:
+          type: integer
+          format: int32
+          example: 150
+      required:
+        - average
+        - count
+
     MealCreateDTO:
-      $ref: './components/schemas.yaml#/MealCreateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 201
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Meal created successfully
+        data:
+          $ref: '#/components/schemas/Meal'
+
     MealUpdateDTO:
-      $ref: './components/schemas.yaml#/MealUpdateDTO'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Meal updated successfully
+        data:
+          $ref: '#/components/schemas/Meal'
+
     TokenResponse:
-      $ref: './components/schemas.yaml#/TokenResponse'
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refresh_token:
+          type: string
+          example: dGhpcy1pcz1hLXJlZnJlc2gtdG9rZW4uLi4=
+
     AuthResponse:
-      $ref: './components/schemas.yaml#/AuthResponse'
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/TokenResponse'
+        links:
+          type: object
+          additionalProperties:
+            type: string
+            format: uri
+
     Pagination:
-      $ref: './components/schemas.yaml#/Pagination'
+      type: object
+      properties:
+        page:
+          type: integer
+          format: int32
+          example: 2
+        limit:
+          type: integer
+          format: int32
+          example: 10
+        totalPages:
+          type: integer
+          format: int32
+          example: 5
+        totalItems:
+          type: integer
+          format: int32
+          example: 50
+        next:
+          type: string
+          format: uri
+          example: /users?page=3&limit=10
+        previous:
+          type: string
+          format: uri
+          example: /users?page=1&limit=10
+      required:
+        - page
+        - limit
+        - totalPages
+        - totalItems
+
   responses:
-    $ref: './components/responses.yaml'
+    '201':
+      description: Successfully created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 201
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: Resource created successfully
+
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 400
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Bad Request
+              message:
+                type: string
+                example: The request could not be understood or was missing required parameters.
+
+    '401':
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 401
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Unauthorized access
+              message:
+                type: string
+                example: You don't have the right permissions to access this resource.
+
+    '403':
+      description: Forbidden - You don't have permission
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 403
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Forbidden
+              message:
+                type: string
+                example: Forbidden - You don't have permission
+
+    '404':
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 404
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Not Found
+              message:
+                type: string
+                example: Resource not found
+
+    '409':
+      description: Conflict - Resource already exists
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 409
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Conflict
+              message:
+                type: string
+                example: Conflict - Resource already exists
+
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 500
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: Internal Server Error
+              message:
+                type: string
+                example: We are sorry for the inconvenience. please try again later
+
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      description: current page number
+      schema:
+        type: integer
+        format: int32
+        example: 2
+
+    limitParam:
+      in: query
+      name: limit
+      description: Number of items per page
+      schema:
+        type: integer
+        format: int32
+        example: 10
+
+    sortTypeParam:
+      in: query
+      name: sort_type
+      description: The type of sort (asc or dsc)
+      schema:
+        type: string
+        enum: [asc, dsc]
+        example: dsc
+
+    sortByParam:
+      in: query
+      name: sort_by
+      description: Sort key
+      schema:
+        type: string
+        example: updatedAt
+
+    searchParam:
+      in: query
+      name: search
+      description: Search term to filter resources
+      schema:
+        type: string
+        example: pizza
+
+    filterParam:
+      in: query
+      name: filter
+      description: Filter key
+      schema:
+        type: string
+        example: category
+
+    idPathParam:
+      in: path
+      name: id
+      description: Unique identifier
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64b64c4f2f9b9c0012345678
+
   securitySchemes:
     BearerAuth:
-      $ref: './components/securitySchemes.yaml#/BearerAuth'
-  parameters:
-    $ref: './components/parameters.yaml'
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

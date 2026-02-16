@@ -10,22 +10,23 @@ class ApiError extends Error {
    * @param success - Success flag (typically false for errors).
    * @param stack - Optional stack trace override.
    */
+
+  success: boolean;
   constructor(
     public statusCode: number,
     message: string = 'Something went wrong',
-    public errors: unknown[] = [],
-    public data: unknown | null = null,
-    public success: boolean,
-    stack: string = ''
+    public data?: unknown | null,
+    public errors?: unknown[],
+    stack?: string
   ) {
     super(message);
     this.name = 'ApiError';
     this.statusCode = statusCode;
-    this.data = data;
+    this.data = data ?? null;
     this.message = message;
     this.success = false;
-    this.errors = errors;
-    this.stack = stack;
+    this.errors = errors ?? [];
+    this.stack = stack ?? '';
 
     if (stack) {
       this.stack = stack;
