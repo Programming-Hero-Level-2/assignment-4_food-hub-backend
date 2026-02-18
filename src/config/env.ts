@@ -9,6 +9,12 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 chars'),
   CORS_ORIGIN: z.string(),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, 'BETTER_AUTH_SECRET must be at least 32 chars'),
+  BETTER_AUTH_URL: z.string().url('BETTER_AUTH_URL must be a valid URL'),
+  EMAIL_USER: z.string(),
+  EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required'),
 });
 
 const env = envSchema.safeParse(process.env);
@@ -24,4 +30,8 @@ export const ENV = {
   DATABASE_URL: env.data.DATABASE_URL,
   JWT_SECRET: env.data.JWT_SECRET,
   CORS_ORIGIN: env.data.CORS_ORIGIN,
+  BETTER_AUTH_SECRET: env.data.BETTER_AUTH_SECRET,
+  BETTER_AUTH_URL: env.data.BETTER_AUTH_URL,
+  EMAIL_USER: env.data.EMAIL_USER,
+  EMAIL_PASSWORD: env.data.EMAIL_PASSWORD,
 } as const;

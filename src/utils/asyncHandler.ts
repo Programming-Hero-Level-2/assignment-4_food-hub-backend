@@ -23,14 +23,14 @@ const asyncHandler =
       await fn(req, res, next);
     } catch (error) {
       const err = error as ApiError;
-      res.status(err.statusCode || 500).json({
-        code: err.statusCode || 500,
-        success: false,
-        message: err.message || 'Something went wrong',
-        errors: err.errors,
-      });
+      // res.status(err.statusCode || 500).json({
+      //   code: err.statusCode || 500,
+      //   success: false,
+      //   message: err.message || 'Something went wrong',
+      //   errors: err.errors,
+      // });
 
-      // next(error)
+      next(err);
     }
   };
 

@@ -22,9 +22,9 @@ export const globalErrorHandler = (
   const message = err.message || 'Something went wrong';
 
   return res.status(statusCode).json({
-    success: false,
     code: statusCode,
+    success: false,
     message: message,
-    error: process.env.NODE_ENV === 'development' ? err : undefined,
+    // error: process.env.NODE_ENV === 'development' ? err : undefined,
   });
 };
