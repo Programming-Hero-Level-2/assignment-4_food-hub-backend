@@ -4,9 +4,9 @@ import { loginSchema, registerSchema } from './auth.schema';
 import { authService } from './auth.service';
 
 export const register = asyncHandler(async (req, res) => {
-  const validatedSchema = registerSchema.parse(req.body);
+  const data = registerSchema.parse(req.body);
 
-  const { email, name, password } = validatedSchema;
+  const { email, name, password } = data;
 
   const user = await authService.registerUser({
     email,
@@ -19,19 +19,18 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const validatedSchema = loginSchema.parse(req.body);
+  const data = loginSchema.parse(req.body);
 
-  const { email, password } = validatedSchema;
-  const user = await authService.loginUser(email, password);
+  const user = await authService.loginUser(data.email, data.password);
 
-  const responsePayload = {
-    id: user.user.id,
-    access_token: user.token,
-  };
+  res.cookie('authToken', user.token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, 'Login successful', responsePayload));
+  res.status(200).json(new ApiResponse(200, 'Login successful', user));
 });
 
 export const authController = {

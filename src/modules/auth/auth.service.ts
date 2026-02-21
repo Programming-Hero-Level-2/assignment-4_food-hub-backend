@@ -1,6 +1,5 @@
 import auth from '../../libs/auth';
 import { ApiError } from '../../utils/ApiError';
-import { userExist } from '../user/user.services';
 import { RegisterUser } from './auth.types';
 
 /**
@@ -12,12 +11,6 @@ import { RegisterUser } from './auth.types';
  * @returns The created user payload from better-auth.
  */
 const registerUser = async ({ email, name, password }: RegisterUser) => {
-  const existingUser = await userExist(email);
-
-  if (existingUser) {
-    throw new ApiError(409, 'User already registered');
-  }
-
   const user = await auth.api.signUpEmail({
     body: {
       email,
@@ -29,7 +22,12 @@ const registerUser = async ({ email, name, password }: RegisterUser) => {
     },
   });
 
-  return user;
+  return {
+    id: user.user.id,
+    name: user.user.name,
+    email: user.user.email,
+    role: user.user.role,
+  };
 };
 
 /**
@@ -39,23 +37,29 @@ const registerUser = async ({ email, name, password }: RegisterUser) => {
  * @param password - The user's password.
  * @returns The authenticated user payload from better-auth.
  */
-const loginUser = async (email: string = '', password: string = '') => {
-  const existingUser = await userExist(email);
-
-  if (!existingUser) {
-    throw new ApiError(404, 'User not registered, please sign up first');
-  }
-
+const loginUser = async (email: string, password: string) => {
   const user = await auth.api.signInEmail({
     body: {
       email,
       password,
     },
   });
-  return user;
+
+  return {
+    token: user.token,
+    id: user.user.id,
+    name: user.user.name,
+    email: user.user.email,
+    role: user.user.role,
+  };
+};
+
+const logout = async () => {
+  await auth.api.signOut();
 };
 
 export const authService = {
   registerUser,
   loginUser,
+  logout,
 };
