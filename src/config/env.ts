@@ -15,6 +15,9 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url('BETTER_AUTH_URL must be a valid URL'),
   EMAIL_USER: z.string(),
   EMAIL_PASSWORD: z.string().min(1, 'EMAIL_PASSWORD is required'),
+  ADMIN_EMAIL: z.email('ADMIN_EMAIL must be a valid email'),
+  ADMIN_PASSWORD: z.string().min(6, 'ADMIN_PASSWORD must be at least 6 chars'),
+  ADMIN_NAME: z.string().min(1, 'ADMIN_NAME is required'),
 });
 
 const env = envSchema.safeParse(process.env);
@@ -34,4 +37,7 @@ export const ENV = {
   BETTER_AUTH_URL: env.data.BETTER_AUTH_URL,
   EMAIL_USER: env.data.EMAIL_USER,
   EMAIL_PASSWORD: env.data.EMAIL_PASSWORD,
+  ADMIN_EMAIL: env.data.ADMIN_EMAIL,
+  ADMIN_PASSWORD: env.data.ADMIN_PASSWORD,
+  ADMIN_NAME: env.data.ADMIN_NAME,
 } as const;

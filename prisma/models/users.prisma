@@ -6,6 +6,7 @@ enum Role {
 
 enum UserStatus {
   ACTIVE
+  PENDING
   INACTIVE
   SUSPENDED
 }
@@ -46,7 +47,7 @@ model Session {
 }
 
 model Account {
-  id                    String    @id
+  id                    String @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
