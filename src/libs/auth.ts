@@ -1,16 +1,9 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-
-import { PrismaClient } from '../../generated/prisma/client';
 import { prisma } from '../config/prisma';
-import {
-  sendEmail,
-  // sendVerificationEmailAction,
-  verificationEmailTemplate,
-} from './sendEmail';
-import { User } from '../modules/user/user.types';
 
-// const prisma = new PrismaClient();
+import { sendEmail } from './sendEmail';
+
 const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
@@ -33,27 +26,25 @@ const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    // requireEmailVerification: true,
   },
 
   // Email verification
-  emailVerification: {
-    sendOnSignUp: true,
-    sendVerificationEmail: async ({ user, token, url }) => {
-      // const verificationLink = `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email?token=${token}`;
-
-      void sendEmail({
-        to: user.email,
-        subject: 'Verify your email',
-        html: `
-          <p>Hello ${user.name ?? user.email},</p>
-          <p>Click the link below to verify your email:</p>
-          <a href="${url}">${url}</a>
-        `,
-      });
-    },
-  },
+  // emailVerification: {
+  //   sendOnSignUp: true,
+  //   sendVerificationEmail: async ({ user, url }) => {
+  //     void sendEmail({
+  //       to: user.email,
+  //       subject: 'Verify your email',
+  //       html: `
+  //         <p>Hello ${user.name ?? user.email},</p>
+  //         <p>Click the link below to verify your email:</p>
+  //         <a href="${url}">${url}</a>
+  //       `,
+  //     });
+  //   },
+  // },
 });
 
-type Session = typeof auth.$Infer.Session;
+// type Session = typeof auth.$Infer.Session;
 export default auth;
