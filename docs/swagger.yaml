@@ -327,7 +327,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInput'
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@mail.com
+                  format: email
+                password:
+                  type: string
+                  example: password123
+                  format: password
+                role:
+                  type: string
+                  example: CUSTOMER
+                  enum: [CUSTOMER, PROVIDER, ADMIN]
+                status:
+                  type: string
+                  example: ACTIVE
+                  enum: [PENDING, ACTIVE, SUSPENDED]
       responses:
         '200':
           description: User updated successfully
@@ -1350,22 +1370,14 @@ components:
               type: string
               example: john.doe@mail.com
               format: email
-            phone:
-              type: string
-              example: +8801712345678
             role:
               type: string
-              example: customer
-              enum: [customer, provider, admin]
+              example: CUSTOMER
+              enum: [CUSTOMER, PROVIDER, ADMIN]
             status:
               type: string
-              example: active
-              enum: [pending, active, suspended]
-            email_verified_at:
-              type: string
-              format: date-time
-              nullable: true
-              example: 2024-06-01T12:00:00Z
+              example: ACTIVE
+              enum: [PENDING, ACTIVE, SUSPENDED]
           required:
             - id
             - name
@@ -1388,20 +1400,14 @@ components:
           type: string
           example: password123
           format: password
-        address:
-          type: string
-          example: 123 Main St, Cityville
-        phone:
-          type: string
-          example: +8801712345678
         role:
           type: string
-          example: customer
-          enum: [customer, provider, admin]
+          example: CUSTOMER
+          enum: [CUSTOMER, PROVIDER, ADMIN]
         status:
           type: string
-          example: active
-          enum: [pending, active, suspended]
+          example: ACTIVE
+          enum: [PENDING, ACTIVE, SUSPENDED]
       required:
         - name
         - email
@@ -1754,7 +1760,7 @@ components:
           type: integer
           format: int32
           example: 2
-        limit:
+        pageSize:
           type: integer
           format: int32
           example: 10
@@ -1769,14 +1775,14 @@ components:
         next:
           type: string
           format: uri
-          example: /users?page=3&limit=10
+          example: /users?page=3&pageSize=10
         previous:
           type: string
           format: uri
-          example: /users?page=1&limit=10
+          example: /users?page=1&pageSize=10
       required:
         - page
-        - limit
+        - pageSize
         - totalPages
         - totalItems
 
@@ -1936,7 +1942,7 @@ components:
 
     limitParam:
       in: query
-      name: limit
+      name: pageSize
       description: Number of items per page
       schema:
         type: integer
@@ -1945,16 +1951,16 @@ components:
 
     sortTypeParam:
       in: query
-      name: sort_type
+      name: sortType
       description: The type of sort (asc or dsc)
       schema:
         type: string
-        enum: [asc, dsc]
-        example: dsc
+        enum: [asc, desc]
+        example: desc
 
     sortByParam:
       in: query
-      name: sort_by
+      name: sortBy
       description: Sort key
       schema:
         type: string
