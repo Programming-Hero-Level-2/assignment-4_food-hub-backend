@@ -43,15 +43,10 @@ const loginUser = async (email: string, password: string) => {
       email,
       password,
     },
+    asResponse: true,
   });
 
-  return {
-    token: user.token,
-    id: user.user.id,
-    name: user.user.name,
-    email: user.user.email,
-    role: user.user.role,
-  };
+  return user;
 };
 
 const logout = async () => {

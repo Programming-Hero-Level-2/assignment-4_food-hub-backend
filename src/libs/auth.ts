@@ -8,6 +8,24 @@ const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+  basePath: '/api/v1/auth',
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    cookieOptions: {
+      httpOnly: true,
+      secure: false, // only in HTTPS production
+      sameSite: 'lax',
+    },
+    // cookieCache: {
+    //   // secure: process.env.NODE_ENV === 'production',
+    //   // secure: false,
+    //   // httpOnly: true,
+    //   // sameSite: 'strict',
+    //   enabled: true,
+    //   refreshCache: false,
+    //   // maxAge: 7 * 24 * 60 * 60, // 7 days
+    // },
+  },
   user: {
     additionalFields: {
       role: {

@@ -191,7 +191,7 @@ paths:
       summary: Get all users
       operationId: getUsers
       security:
-        - BearerAuth: []
+        - BetterAuthSession: []
       tags:
         - Admin - Users
       parameters:
@@ -1992,8 +1992,13 @@ components:
         format: uuid
         example: 64b64c4f2f9b9c0012345678
 
+  # securitySchemes:
+  #   BearerAuth:
+  #     type: http
+  #     scheme: bearer
+  #     bearerFormat: JWT
   securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    BetterAuthSession:
+      type: 'apiKey'
+      in: 'cookie'
+      name: 'authToken'
