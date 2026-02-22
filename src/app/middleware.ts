@@ -6,6 +6,7 @@ import OpenApiValidator from 'express-openapi-validator';
 import YAML from 'yamljs';
 import { ENV } from '../config/env';
 const swaggerDoc = YAML.load('./docs/swagger.yaml');
+import cookieParser from 'cookie-parser';
 
 const applyMiddleware = (app: Express) => {
   app.use(
@@ -16,6 +17,7 @@ const applyMiddleware = (app: Express) => {
   );
   app.use(express.json({ limit: '16kb' }));
   app.use(express.urlencoded({ limit: '16kb', extended: true }));
+  app.use(cookieParser());
   app.use(morgan('dev'));
 
   app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
