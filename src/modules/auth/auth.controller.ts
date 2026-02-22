@@ -1,3 +1,4 @@
+import auth from '../../libs/auth';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { asyncHandler } from '../../utils/asyncHandler';
 import { loginSchema, registerSchema } from './auth.schema';
@@ -23,14 +24,18 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await authService.loginUser(data.email, data.password);
 
-  res.cookie('authToken', user.token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+  if (user.headers.get('Set-Cookie')) {
+    res.setHeader('Set-Cookie', user.headers.get('Set-Cookie') || '');
+  }
 
-  res.status(200).json(new ApiResponse(200, 'Login successful', user));
+  const response = await user.json();
+
+  res.status(200).json(
+    new ApiResponse(200, 'Login successful', {
+      id: response.user.id,
+      token: response.token,
+    })
+  );
 });
 
 export const authController = {
